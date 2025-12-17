@@ -195,8 +195,9 @@ def get_distance_cm():
 SAMPLE_RATE = 16000
 WINDOW_SIZE = 15600  # 1.0 s
 HOP_SIZE = 8000  # 0.5 s
-THRESHOLD = 0.2
+THRESHOLD = 0.1
 CONSECUTIVE_HITS = 3  # 连续命中次数
+CONSECUTIVE_SCORE = 5
 
 MODEL_PATH = "yamnet.tflite"
 CLASS_MAP_PATH = "yamnet_class_map.csv"
@@ -228,15 +229,16 @@ for i in cat_indices:
     print(f"  {i}: {class_names[i]}")
 
 # 音频队列
-audio_q = np.zeros(0, dtype=np.float32)
+audio_q = queue.Queue(maxsize=8000)
 
 
 def audio_callback(indata, frames, time_info, status):
-    global audio_q
     if status:
         print(status)
-    start = max((len(audio_q) - WINDOW_SIZE * 2, 0))
-    audio_q = np.concatenate([audio_q[start:], indata[:, 0].copy()])
+    if audio_q.full():
+        audio_q.get()
+        print("pop")
+    audio_q.put(indata[:, 0].copy())
 
 
 # 推理函数
@@ -254,11 +256,18 @@ def yamnet_infer(waveform: np.ndarray) -> np.ndarray:
 dev_sound = sd.InputStream(samplerate=SAMPLE_RATE, channels=1, callback=audio_callback)
 dev_sound.start()
 
+buffer = np.zeros(0, dtype=np.float32)
+
 
 def detect_sound():
-    buffer = audio_q
+    global buffer
+    q = [buffer]
+    while not audio_q.empty():
+        q.append(audio_q.get())
+    buffer = np.concatenate(q)
     hit_count = 0
-
+    score = 0
+    print(len(buffer))
     # 滑窗
     while len(buffer) >= WINDOW_SIZE:
         chunk = buffer[:WINDOW_SIZE]
@@ -268,13 +277,14 @@ def detect_sound():
         cat_score = scores[:, cat_indices].max()
 
         if cat_score > THRESHOLD:
-            hit_count += 2
+            hit_count += 1
+            score += 5
         else:
-            hit_count = max(0, hit_count - 1)
+            score = max(0, score - 1)
 
         # print(f"cat_score={cat_score:.3f}, hit={hit_count}")
 
-        if hit_count >= CONSECUTIVE_HITS:
+        if hit_count >= CONSECUTIVE_HITS or score >= CONSECUTIVE_SCORE:
             return True
     return hit_count
 
@@ -311,7 +321,7 @@ def main():
             cat_distance = get_distance_cm()
 
             print(f"{cat_in_sight=}, {cat_meowing=}, {cat_distance=}")
-            time.sleep(0.01)
+            time.sleep(0.5)
     except KeyboardInterrupt:
         pass
     finally:
