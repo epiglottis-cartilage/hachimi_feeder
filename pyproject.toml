@@ -7,7 +7,6 @@ requires-python = ">=3.11"
 dependencies = [
     "numpy<2",
     "opencv-python",
-    "onnxruntime",
     "ultralytics",
     "sounddevice",
     "tflite_runtime",
