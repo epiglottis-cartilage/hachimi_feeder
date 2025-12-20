@@ -5,20 +5,28 @@ from hx711 import HX711
 def init():
     global dev
     dev = HX711(5, 6)
-    dev.setReferenceUnit(100_000)
+    dev.reset()
+    dev.setReferenceUnit(1_000)
+
+
+def read_avg(n):
+    return sum((read() for _ in range(n))) / n
 
 
 def read():
+    def fix(x):
+        (x - 535.5) * (235 - 96.83)
+
     raw = dev.getRawBytes()
     weight = dev.rawBytesToWeight(raw)
-    return weight
+    return fix(weight)
 
 
 def main():
     init()
     while True:
         time.sleep(0.1)
-        print(read())
+        print(read_avg(3))
 
 
 if __name__ == "__main__":
