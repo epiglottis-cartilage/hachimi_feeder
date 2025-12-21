@@ -14,8 +14,8 @@ def close():
     del dev
 
 
-def read_avg(n=3):
-    return sum((read() for _ in range(n))) / n
+def read_avg(n=5):
+    return sum(sorted((read() for _ in range(n)))[2:-1]) / (n - 3)
 
 
 def read():
@@ -31,7 +31,7 @@ def main():
     init()
     while True:
         time.sleep(0.1)
-        print(read_avg(3))
+        print(read_avg())
 
 
 if __name__ == "__main__":
