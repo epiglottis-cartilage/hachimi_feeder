@@ -1,4 +1,4 @@
-import uln2003
+from .uln2003 import ULN2003
 import queue
 import threading
 
@@ -21,7 +21,7 @@ def _worker():
 def init():
     global dev, cmds, t
     cmds = queue.Queue(maxsize=16)
-    dev = uln2003.ULN2003([17, 18, 27, 22], step=2)
+    dev = ULN2003([17, 18, 27, 22], step=2)
     t = threading.Thread(target=_worker, daemon=True)
     t.start()
 
