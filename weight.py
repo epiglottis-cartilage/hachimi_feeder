@@ -1,5 +1,5 @@
 import time
-from .hx711 import HX711
+from hx711 import HX711
 
 
 def init():

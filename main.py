@@ -17,18 +17,19 @@ if __name__ == "__main__":
     try:
         while True:
             w = weight.read_avg()
-            print(f"{w - 295}g remain...")
-            if w - 295 < 40:
+            print(f"{w - 288.5}g remain...")
+            if w - 288.5 < 40:
                 beep.beep()
                 time.sleep(3)
+                continue
 
             step = 430 if w < 600 else 400
 
             # print(sight.can_see(), hearing.meow(), weight.read_avg())
             if sight.can_see([HUMAN, CAT]):
                 print("I seeeee you, feeding...")
-                motor.rotate(step)
                 motor.rotate(-step)
+                motor.rotate(step)
                 time.sleep(10)
 
             time.sleep(1)
