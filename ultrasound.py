@@ -1,4 +1,5 @@
 from hscr04 import HCSR04
+import time
 
 
 def init():
@@ -17,6 +18,7 @@ def read_avg(n=4):
 
 def read():
     distance = dev.distance_cm() or 500.0
+    time.sleep(0.06)
     return distance
 
 
@@ -25,6 +27,10 @@ def main():
     try:
         while True:
             print(read())
-    except Exception:
+    except KeyboardInterrupt:
         pass
     close()
+
+
+if __name__ == "__main__":
+    main()

@@ -11,7 +11,7 @@ def _worker():
         try:
             step = cmds.get(timeout=1)
             dev.rotate(step)
-        except:
+        except Exception:
             pass
         finally:
             if killed:
