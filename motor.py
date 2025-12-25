@@ -1,4 +1,4 @@
-from .uln2003 import ULN2003
+from uln2003 import ULN2003
 import queue
 import threading
 
