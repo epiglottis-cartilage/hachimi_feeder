@@ -27,6 +27,7 @@ if __name__ == "__main__":
 
             if not ultrasound.nearby():
                 time.sleep(1)
+                print("nothing nearby")
                 continue
 
             step = 430 if w < 600 else 400

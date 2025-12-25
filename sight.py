@@ -23,7 +23,7 @@ def close():
 
 def can_see(objs):
     global scan_angle, scan_direction, model, cap
-
+    print("trying to see something")
     ret = False
     frame = None
     while not ret:

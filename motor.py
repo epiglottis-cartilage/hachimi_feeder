@@ -27,6 +27,7 @@ def init():
 
 
 def rotate(steps, nonblock=True):
+    print("motor moving ...")
     global cmds
     if nonblock:
         cmds.put(int(steps))

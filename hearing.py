@@ -21,6 +21,7 @@ CLASS_MAP_PATH = "yamnet_class_map.csv"
 
 def init():
     global model, input_details, output_details, audio_q, cat_indices, buffer, dev_sound
+    print("loading yamnet ...")
     model = tflite.Interpreter(model_path=MODEL_PATH)
     model.allocate_tensors()
 
